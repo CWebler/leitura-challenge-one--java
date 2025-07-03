@@ -6,8 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LivroRepository extends JpaRepository<Livro, Long> {
+
+    Optional<Livro> findFirstByTituloIgnoreCase(String titulo);
 
     @Query("SELECT DISTINCT l FROM Livro l JOIN FETCH l.autores JOIN FETCH l.idiomas i WHERE i = :idioma")
     List<Livro> findByIdiomaComAutoresEIdiomas(@Param("idioma") String idioma);

@@ -34,7 +34,13 @@ public class LivroService {
         this.mapper = mapper;
     }
 
+    @Transactional
     public Livro buscarLivroPorTitulo(String titulo) {
+        Optional<Livro> salvo = livroRepository.findFirstByTituloIgnoreCase(titulo);
+        if (salvo.isPresent()) {
+            return salvo.get();
+        }
+
         try {
             String url = BASE_URL + titulo.replace(" ", "%20");
             HttpRequest request = HttpRequest.newBuilder()
@@ -46,7 +52,6 @@ public class LivroService {
             JsonNode root = mapper.readTree(response.body());
             JsonNode resultados = root.path("results");
             if (resultados.isEmpty() || resultados.get(0) == null) {
-                System.out.println("Nenhum livro encontrado com esse título.");
                 return null;
             }
 
@@ -71,11 +76,12 @@ public class LivroService {
             return null;
         }
     }
+
     @Transactional(readOnly = true)
     public List<Livro> listarTodosLivros() {
         return livroRepository.findAllComAutoresEIdiomas();
-
     }
+
 
     @Transactional(readOnly = true)
     public List<Livro> listarLivrosPorIdioma(String idioma) {
