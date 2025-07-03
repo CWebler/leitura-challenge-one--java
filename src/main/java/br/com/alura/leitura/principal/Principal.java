@@ -30,7 +30,7 @@ public class Principal {
                     2 - Listar livros registrados
                     3 - Listar autores registrados
                     4 - Autores vivos em um determinado ano
-                    5 - Listar livros lançados em um determinado ano
+                    5 - Listar livros por idioma
 
                     0 - SAIR
                     """;
@@ -52,7 +52,7 @@ public class Principal {
                     autoresVivosEmUmDeterminadoAno();
                     break;
                 case 5:
-                    livrosLancadosPorAno();
+                    listarLivrosPorIdioma();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -104,7 +104,14 @@ public class Principal {
         }
     }
 
-    private void livrosLancadosPorAno() {
-        System.out.println("Função não implementada ainda.");
+    private void listarLivrosPorIdioma() {
+        System.out.print("Digite o idioma (ex.: en, pt, es, fr ): ");
+        String idioma = leitura.nextLine();
+        List<Livro> livros = livroService.listarLivrosPorIdioma(idioma);
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro encontrado para esse idioma.");
+        } else {
+            livros.forEach(System.out::println);
+        }
     }
 }

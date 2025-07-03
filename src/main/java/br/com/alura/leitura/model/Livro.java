@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
@@ -18,21 +19,25 @@ public class Livro {
     @JsonAlias("title")
     private String titulo;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "livro_autor",
             joinColumns = @JoinColumn(name = "livro_id"),
             inverseJoinColumns = @JoinColumn(name = "autor_id"))
     @JsonAlias("authors")
-    private List<Autor> autores;
+    private Set<Autor> autores = new HashSet<>();
 
     @ElementCollection
     @CollectionTable(name = "livro_idiomas", joinColumns = @JoinColumn(name = "livro_id"))
     @Column(name = "idioma")
     @JsonAlias("languages")
-    private List<String> idiomas;
+    private Set<String> idiomas = new HashSet<>();
 
     @JsonAlias("download_count")
     private int numeroDownloads;
+
+    @JsonAlias("copyright_year")
+    @Column(name = "ano_lancamento")
+    private Integer anoLancamento;
 
     public Livro() {
     }
@@ -53,19 +58,19 @@ public class Livro {
         this.titulo = titulo;
     }
 
-    public List<Autor> getAutores() {
+    public Set<Autor> getAutores() {
         return autores;
     }
 
-    public void setAutores(List<Autor> autores) {
+    public void setAutores(Set<Autor> autores) {
         this.autores = autores;
     }
 
-    public List<String> getIdiomas() {
+    public Set<String> getIdiomas() {
         return idiomas;
     }
 
-    public void setIdiomas(List<String> idiomas) {
+    public void setIdiomas(Set<String> idiomas) {
         this.idiomas = idiomas;
     }
 
@@ -77,12 +82,20 @@ public class Livro {
         this.numeroDownloads = numeroDownloads;
     }
 
+    public Integer getAnoLancamento() {
+        return anoLancamento;
+    }
+
+    public void setAnoLancamento(Integer anoLancamento) {
+        this.anoLancamento = anoLancamento;
+    }
+
     public String getPrimeiroIdioma() {
-        return (idiomas != null && !idiomas.isEmpty()) ? idiomas.get(0) : null;
+        return (idiomas != null && !idiomas.isEmpty()) ? idiomas.iterator().next() : null;
     }
 
     public String getPrimeiroAutor() {
-        return (autores != null && !autores.isEmpty()) ? autores.get(0).getNome() : null;
+        return (autores != null && !autores.isEmpty()) ? autores.iterator().next().getNome() : null;
     }
 
     @Override
@@ -90,6 +103,7 @@ public class Livro {
         return "Livro: " + titulo +
                 " | Autor: " + getPrimeiroAutor() +
                 " | Idioma: " + getPrimeiroIdioma() +
+                " | Ano: " + anoLancamento +
                 " | Downloads: " + numeroDownloads;
     }
 }
